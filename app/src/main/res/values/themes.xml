@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Window theme only. All in-app styling comes from RiceCheckTheme (Compose). -->
+    <style name="Theme.RiceCheck" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/ricecheck_background</item>
+        <item name="android:statusBarColor">@color/ricecheck_background</item>
+        <item name="android:navigationBarColor">@color/ricecheck_background</item>
+        <item name="android:windowLightStatusBar">true</item>
+    </style>
+</resources>

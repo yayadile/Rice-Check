@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "com.kel2.ricecheck"
+    namespace = "com.yayadile.ricecheck"
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.kel2.ricecheck"
-        minSdk = 24
+        applicationId = "com.yayadile.ricecheck"
+        minSdk = 26
         targetSdk = 37
         versionCode = 1
         versionName = "1.0"
@@ -37,6 +37,7 @@ android {
         compose = true
     }
 
+    // A .tflite asset must be stored uncompressed or LiteRT cannot mmap it.
     androidResources {
         noCompress += "tflite"
     }
@@ -46,6 +47,11 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+}
+
+ksp {
+    // exportSchema = true in AppDatabase requires a schema location.
+    arg("room.schemaLocation", "$projectDir/schemas")
 }
 
 dependencies {
@@ -59,6 +65,7 @@ dependencies {
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.navigation.compose)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
@@ -73,6 +80,11 @@ dependencies {
     implementation(libs.androidx.room.runtime)
     ksp(libs.androidx.room.compiler)
 
+    // Preferences (onboarding_completed only)
+    implementation(libs.androidx.datastore.preferences)
+
     // LiteRT 2.2.0
     implementation(libs.litert)
+
+    testImplementation(libs.junit)
 }
