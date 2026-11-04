@@ -113,19 +113,11 @@ fun HomeContent(
             verticalArrangement = Arrangement.spacedBy(Spacing.md)
         ) {
             item {
-                Column {
-                    Text(
-                        text = "Halo!",
-                        style = MaterialTheme.typography.displaySmall,
-                        color = RiceColors.Text
-                    )
-                    Spacer(Modifier.height(Spacing.xs))
-                    Text(
-                        text = "Cek kualitas beras sebelum membeli.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = RiceColors.TextSecondary
-                    )
-                }
+                Text(
+                    text = "Cek kualitas beras sebelum membeli.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = RiceColors.TextSecondary
+                )
             }
 
             item {
