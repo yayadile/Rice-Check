@@ -39,8 +39,8 @@ class AppContainer(context: Context) {
     val onboardingPrefs: OnboardingPrefs by lazy { OnboardingPrefs(appContext) }
 
     /**
-     * False until assets/ricecheck_v1.tflite ships: every report is a stub until then.
-     * Screens surface this so stub numbers are never presented as a real analysis.
+     * True only when the YOLO or SVM asset is missing/unreadable. With the shipped models this is
+     * false; if it were ever true, `classify` fails instead of showing fabricated numbers.
      */
     val isClassifierStub: Boolean by lazy { !riceClassifier.isModelAvailable }
 }

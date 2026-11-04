@@ -28,4 +28,7 @@ interface ScanDao {
 
     @Query("DELETE FROM scan_results WHERE id = :id")
     suspend fun deleteById(id: Long)
+
+    @Query("DELETE FROM scan_results")
+    suspend fun deleteAll()
 }

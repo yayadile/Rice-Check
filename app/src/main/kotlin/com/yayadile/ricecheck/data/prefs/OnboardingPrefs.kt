@@ -11,7 +11,8 @@ private val Context.riceCheckDataStore by preferencesDataStore(name = "ricecheck
 
 /**
  * DataStore preferences — docs/architecture.md §6.
- * Exactly one key in v1: onboarding_completed (kept out of Room on purpose).
+ * `onboarding_completed` is kept out of Room on purpose. `legacy_stub_rows_cleared`
+ * marks the one-time deletion of history rows created while the model was still a stub.
  */
 class OnboardingPrefs(private val context: Context) {
 
@@ -24,7 +25,17 @@ class OnboardingPrefs(private val context: Context) {
         }
     }
 
+    val legacyStubRowsCleared: Flow<Boolean> = context.riceCheckDataStore.data
+        .map { prefs -> prefs[Keys.LEGACY_STUB_ROWS_CLEARED] ?: false }
+
+    suspend fun setLegacyStubRowsCleared(cleared: Boolean) {
+        context.riceCheckDataStore.edit { prefs ->
+            prefs[Keys.LEGACY_STUB_ROWS_CLEARED] = cleared
+        }
+    }
+
     private object Keys {
         val ONBOARDING_COMPLETED = booleanPreferencesKey("onboarding_completed")
+        val LEGACY_STUB_ROWS_CLEARED = booleanPreferencesKey("legacy_stub_rows_cleared")
     }
 }

@@ -24,6 +24,10 @@ class ScanRepositoryImpl(
     private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
 ) : ScanRepository {
 
+    private companion object {
+        const val MAX_DECODE_SIZE = 1920
+    }
+
     override fun observeAll(): Flow<List<ScanResultEntity>> = dao.getAll()
 
     override fun observeById(id: Long): Flow<ScanResultEntity?> = dao.getById(id)
@@ -34,7 +38,9 @@ class ScanRepositoryImpl(
     override fun countSince(since: Long): Flow<Int> = dao.countSince(since)
 
     override suspend fun save(photoPath: String, price: Int?): Long = withContext(ioDispatcher) {
-        val bitmap = ImageDecoder.decode(photoPath)
+        // Cap the decode size: the detector needs 1280 and the SVM 256, so ~1920 keeps
+        // full fidelity while avoiding OOM on 48 MP camera photos.
+        val bitmap = ImageDecoder.decode(photoPath, targetSizePx = MAX_DECODE_SIZE)
             ?: throw IOException("Foto tidak bisa dibaca: $photoPath")
         val report = classifier.classify(bitmap)
         val verdict = VerdictCalculator.decide(price, report)
