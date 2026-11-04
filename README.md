@@ -23,9 +23,9 @@ Analysis runs fully on-device and offline. There is no login, sync, or network p
 
 The result is saved to history together with the photo, price, and metrics.
 
-> The ML models are not wired into the app yet. `RiceClassifier` currently returns a stub
-> `QualityReport`, and the result screen shows a clear "model not available" banner. Never treat
-> the displayed stub numbers as a real analysis. See [models/README.md](models/README.md).
+Analysis is fully on-device: YOLO11s (LiteRT) detects and counts grains, then a ported RBF SVM
+decides the bleach level. If a model is missing or no grain is detected the scan **fails with a
+clear message** — the app never fabricates numbers. See [models/README.md](models/README.md).
 
 ## Features (v1)
 
@@ -95,8 +95,10 @@ device. Open a file under `app/src/main/kotlin/com/yayadile/ricecheck/ui/screens
 ./gradlew testDebugUnitTest
 ```
 
-Unit tests live in `app/src/test/kotlin/com/yayadile/ricecheck/`. They currently cover the
-`VerdictCalculator` logic (10 tests).
+Unit tests live in `app/src/test/kotlin/com/yayadile/ricecheck/`: verdict logic plus golden-vector
+tests that pin the Kotlin ML port to the scikit-image/OpenCV/sklearn reference (feature parity
+~1e-7, SVM decisions within 1e-3). On-device tests live in `app/src/androidTest/` and are run with
+`connectedDebugAndroidTest` (or `adb shell am instrument`).
 
 To run everything used for a baseline check:
 
@@ -112,7 +114,7 @@ app/src/main/kotlin/com/yayadile/ricecheck/
 ├── di/                  # manual DI (AppContainer, CompositionLocal)
 ├── domain/              # VerdictCalculator, VerdictConfig, QualityReport
 ├── data/                # Room, file storage, DataStore
-├── ml/                  # RiceClassifier (LiteRT wrapper, currently stub)
+├── ml/                  # YoloDetector + FeatureExtractor + BleachClassifier + RiceClassifier
 ├── util/                # image decoding (EXIF + sampling)
 ├── viewmodel/           # one ViewModel per screen
 └── ui/
@@ -122,19 +124,23 @@ app/src/main/kotlin/com/yayadile/ricecheck/
     ├── components/      # reusable UI
     └── preview/         # preview-only fixtures
 
-models/                  # YOLOv11s + SVM artifacts (not used at runtime yet)
+app/src/main/assets/      # yolo11s_beras.tflite + bleach_svm_rbf.bin (runtime models)
+app/src/test/resources/   # golden vectors for the ML port
+tools/                    # python export/verification scripts
+models/                  # source artifacts (best.pt/onnx, svm_rbf.pkl)
 docs/                    # product/architecture/design documentation
 ```
 
 ## Models
 
-The trained artifacts are staged under [`models/`](models/README.md):
+Runtime assets are bundled in `app/src/main/assets/`:
 
-- `models/yolo11s_beras/` — YOLO11s detector (`best.pt`, `best.onnx`), 5 classes
-- `models/bleach_svm/` — RBF SVM bleach classifier (`svm_rbf.pkl`)
+- `yolo11s_beras.tflite` — YOLO11s detector (input `1x1280x1280x3` NHWC, output `1x9x33600`),
+  classes `beras_utuh, beras_patah, menir, gabah, batu`.
+- `bleach_svm_rbf.bin` — RBF SVM + `StandardScaler` for the bleach classifier.
 
-They still need conversion and integration before the app can produce real results. The app
-expects a LiteRT asset at `app/src/main/assets/ricecheck_v1.tflite`, which does not exist yet.
+Source artifacts and provenance live under [`models/`](models/README.md); export/verification
+scripts live under [`tools/`](tools/).
 
 ## Documentation
 
@@ -146,10 +152,16 @@ expects a LiteRT asset at `app/src/main/assets/ricecheck_v1.tflite`, which does 
 
 ## Known limitations
 
-- Real ML inference is not implemented; results are a clearly-marked stub.
-- The app has not been runtime-tested on a physical device or emulator.
-- No instrumentation tests, release signing, or AAB build yet.
+- Device smoke tests were run on an emulator (API 36) with `-gpu host`; SwiftShader crashes on
+  this host, so use a hardware renderer.
+- No AAB build yet.
 - Preview code currently ships in the release build.
+
+## Model provenance
+
+- YOLO11s weights are Ultralytics models, licensed **AGPL-3.0** — see
+  [models/README.md](models/README.md) before distributing.
+- The bleach SVM is a scikit-learn `SVC(kernel="rbf")` ported to Kotlin (198 support vectors).
 
 ## Disclaimer
 

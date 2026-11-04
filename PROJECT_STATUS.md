@@ -381,16 +381,23 @@ adb shell am start -n com.yayadile.ricecheck/.MainActivity
 
 ---
 
-## 12. Next steps (prioritas)
+## 12. Next steps — status
 
-1. **Smoke test di device/emulator** (paling penting): install, izin kamera, scan, harga kosong vs
-   terisi, 3 hasil, riwayat, filter, hapus, rotasi layar, app restart (onboarding tidak muncul lagi).
-   Emulator belum terpasang — perlu `sdkmanager "emulator" "system-images;android-36;google_apis;x86_64"`.
-2. **Pasang model asli** + implementasi inferensi (lihat §6). Uji dengan foto beras nyata.
-3. Kalau hasil model sudah ada: putuskan apakah baris lama (yang dibuat saat stub) perlu ditandai/dihapus.
-4. Rapikan build release: signing config, `versionName`, minify, cek ukuran.
-5. Opsional: pindahkan preview ke `src/debug`, tambah Screenshot Test kalau mau cek visual otomatis.
-6. Opsional: `docs/` dan kode sudah sinkron; kalau menambah fitur, update `docs/` dulu.
+1. **Smoke test emulator** — SELESAI (API 36). Instrumented test `RiceClassifierInstrumentedTest`
+   lulus 3/3 (model load, YOLO deteksi, mapping). Catatan: emulator harus pakai `-gpu host`;
+   SwiftShader segfault di mesin ini.
+2. **Model asli + inferensi** — SELESAI. YOLO11s (LiteRT) + RBF SVM di Kotlin; parity fitur
+   ~1e-7 dan keputusan SVM <1e-3 terhadap scikit-image/OpenCV/sklearn.
+3. **Baris lama saat stub** — SELESAI: dihapus sekali saat upgrade (`legacy_stub_rows_cleared`).
+4. **Build release** — BELUM: signing config, `versionName`, minify, cek ukuran.
+5. Opsional: pindahkan preview ke `src/debug` + Screenshot Test — BELUM.
+6. Docs — SELESAI untuk pipeline ML (README, models/README, docs/architecture.md).
+
+### Temuan porting (penting untuk regen)
+- OpenCV 5.0 `BGR2GRAY`: `(9798R + 19235G + 3735B + 16384) >> 15` (bukan koefisien 14-bit lama).
+- skimage `graycomatrix(symmetric=True)` = `P + Pᵀ` (diagonal digandakan).
+- OpenCV `MORPH_CLOSE, iterations=2` = satu kernel 5×5 (bukan dua kali 3×3).
+- HOG skimage 256×256/16/2×2 → 8100, bin nearest (tanpa interpolasi).
 
 ---
 
@@ -411,7 +418,13 @@ app/src/main/kotlin/com/yayadile/ricecheck/
 │   ├── local/                       # ScanResultEntity, ScanDao, AppDatabase
 │   ├── repo/                        # ScanRepository, Impl, ScanFileStore
 │   └── prefs/OnboardingPrefs.kt
-├── ml/RiceClassifier.kt             # LiteRT + TODO(ml) stub
+├── ml/
+│   ├── RiceClassifier.kt            # orkestrasi YOLO + SVM -> QualityReport
+│   ├── YoloDetector.kt / YoloPost.kt# LiteRT, letterbox, decode, NMS
+│   ├── FeatureExtractor.kt          # GLCM + HOG + histogram (parity Python)
+│   ├── BleachClassifier.kt          # StandardScaler + RBF SVM
+│   ├── QualityMapping.kt            # rumus metrik yang disetujui
+│   └── AnalysisException.kt         # kegagalan analisis (tanpa angka stub)
 ├── util/ImageDecoder.kt             # EXIF + sampling
 ├── viewmodel/                       # 7 VM + factories
 └── ui/
@@ -422,8 +435,13 @@ app/src/main/kotlin/com/yayadile/ricecheck/
     │                                # RiceBottomBar, ScanPhoto, ScanRow, VerdictBadge
     ├── screens/                     # 7 screen (Screen + Content + Preview)
     └── preview/PreviewFixtures.kt   # data PREVIEW ONLY + PreviewSurface
+app/src/main/assets/                 # yolo11s_beras.tflite, bleach_svm_rbf.bin
 app/src/test/.../VerdictCalculatorTest.kt
+app/src/test/.../ml/                 # golden-vector + postprocess + mapping tests
+app/src/test/resources/golden/       # golden vectors (svm resized/features/scaled, yolo)
+app/src/androidTest/                 # RiceClassifierInstrumentedTest + foto uji
 app/schemas/.../AppDatabase/1.json
+tools/                               # export/verify/golden python scripts
 docs/                                # features, IA, architecture, design-tokens
 ```
 
@@ -440,3 +458,8 @@ docs/                                # features, IA, architecture, design-tokens
 - Tanpa room-ktx.
 - `isStub` tidak dipersist di DB.
 - Preview memakai `Content` stateless + `PreviewFixtures` + chip `PREVIEW DATA`.
+- Tidak ada angka stub sejak model asli terpasang: kegagalan → `AnalysisException`, bukan angka palsu.
+- Model tetap hanya menghasilkan metrik kualitas; vonis tetap di `VerdictCalculator`.
+- SVM dipilih varian RBF non-CLAHE (`C=10`, `gamma=scale`), di-port ke Kotlin (bukan runtime Python).
+- YOLO TFLite NHWC + output NCHW; NMS class-aware conf 0.25 / IoU 0.45 / max 1000.
+- Model disimpan sebagai aset runtime di `app/src/main/assets/` (bukan di `models/`).
