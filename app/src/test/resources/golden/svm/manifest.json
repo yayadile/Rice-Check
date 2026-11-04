@@ -1,0 +1,74 @@
+[
+  {
+    "name": "normal_00",
+    "label": "normal",
+    "decision": -0.999663269843051,
+    "class": 0
+  },
+  {
+    "name": "normal_01",
+    "label": "normal",
+    "decision": -0.35877816751778047,
+    "class": 0
+  },
+  {
+    "name": "normal_02",
+    "label": "normal",
+    "decision": -0.47100742291329173,
+    "class": 0
+  },
+  {
+    "name": "normal_03",
+    "label": "normal",
+    "decision": -1.0002845877500022,
+    "class": 0
+  },
+  {
+    "name": "normal_04",
+    "label": "normal",
+    "decision": -0.9998946676737568,
+    "class": 0
+  },
+  {
+    "name": "normal_05",
+    "label": "normal",
+    "decision": -0.9998703409677554,
+    "class": 0
+  },
+  {
+    "name": "pemutih_00",
+    "label": "pemutih",
+    "decision": 0.4532747506275891,
+    "class": 1
+  },
+  {
+    "name": "pemutih_01",
+    "label": "pemutih",
+    "decision": 1.0001844064081682,
+    "class": 1
+  },
+  {
+    "name": "pemutih_02",
+    "label": "pemutih",
+    "decision": 0.02133749222331366,
+    "class": 1
+  },
+  {
+    "name": "pemutih_03",
+    "label": "pemutih",
+    "decision": 1.0000230411157895,
+    "class": 1
+  },
+  {
+    "name": "pemutih_04",
+    "label": "pemutih",
+    "decision": 0.8040108348791919,
+    "class": 1
+  },
+  {
+    "name": "pemutih_05",
+    "label": "pemutih",
+    "decision": 1.000056472141238,
+    "class": 1
+  }
+]
