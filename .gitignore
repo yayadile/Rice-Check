@@ -8,4 +8,8 @@
 /captures
 .externalNativeBuild
 .cxx
+__pycache__/
+*.pyc
+/keystore.properties
+*.jks
 
