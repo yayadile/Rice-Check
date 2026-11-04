@@ -69,6 +69,22 @@ class BleachClassifier private constructor(
 
     fun isPemutih(features: FloatArray): Boolean = decision(features) > 0f
 
+    /**
+     * Model confidence that the sample is `pemutih`, as a 0..100 percentage.
+     *
+     * The SVM decision value is a signed margin, not a calibrated probability, so we map it
+     * through a stable sigmoid. It is a confidence score, NOT a bleach concentration.
+     */
+    fun pemutihConfidence(features: FloatArray): Int {
+        val d = decision(features).toDouble()
+        val probability = if (d >= 0.0) {
+            1.0 / (1.0 + exp(-d))
+        } else {
+            exp(d) / (1.0 + exp(d))
+        }
+        return (probability * 100.0).roundToInt().coerceIn(0, 100)
+    }
+
     companion object {
         private val MAGIC = byteArrayOf('R'.code.toByte(), 'S'.code.toByte(), 'V'.code.toByte(), 'M'.code.toByte())
 

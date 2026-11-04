@@ -23,7 +23,9 @@ class AppContainer(context: Context) {
             appContext,
             AppDatabase::class.java,
             "ricecheck.db"
-        ).build()
+        )
+            .addMigrations(AppDatabase.MIGRATION_1_2)
+            .build()
     }
 
     val scanDao: ScanDao by lazy { database.scanDao() }

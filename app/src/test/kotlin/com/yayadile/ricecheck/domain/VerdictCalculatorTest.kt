@@ -17,7 +17,8 @@ class VerdictCalculatorTest {
         qualityScore = score,
         wholeGrainPct = 80,
         brokenPct = 20,
-        bleachLevel = BleachLevel.RENDAH
+        bleachLevel = BleachLevel.RENDAH,
+        bleachPct = 10
     )
 
     @Test

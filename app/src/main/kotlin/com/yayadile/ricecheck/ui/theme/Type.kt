@@ -29,7 +29,7 @@ val HankenGrotesk = FontFamily(
 
 /** Type scale from docs/design-tokens.md. */
 val RiceTypography = Typography(
-    // Display — 28sp / 36sp / 800 — "Halo!"
+    // Display — 28sp / 36sp / 800 — skor kualitas
     displaySmall = TextStyle(
         fontFamily = Manrope,
         fontWeight = FontWeight.ExtraBold,

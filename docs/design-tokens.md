@@ -46,7 +46,7 @@ Ukuran / Line-height / Weight
 Contoh pakai
 Display
 28sp / 36sp / 800
-Sapaan "Halo!"
+Skor kualitas (angka)
 Title
 22sp / 30sp / 700
 Judul screen ("Riwayat Analisis")
@@ -98,7 +98,7 @@ Material Symbols Outlined, ukuran 20–28dp. Jangan pakai emoji sebagai ikon.
 Catatan: sisa slop di mockup Stitch (betulkan sebelum implement)
 Revisi aturan data (3 Nov): vonis sekarang dihitung dari rumus harga-vs-kualitas
 (lihat features.md). Data real v1 = harga (Rp/kg), skor kualitas 0–100, metrik
-(% butir utuh, % menir/patah, indikasi pemutih rendah/tinggi), hasil
+(% butir utuh, % menir/patah, indikasi pemutih rendah/tinggi + persentase keyakinan), hasil
 (ASLI / BERPOTENSI OPLOSAN / LAPORAN KUALITAS), tanggal. Breakdown metrik kualitas
 boleh tampil — itu data beneran, bukan karangan.
 Onboarding kartu 3: "Murni 100%" — invented stat, hapus. Yang boleh tampil cuma metrik di atas.

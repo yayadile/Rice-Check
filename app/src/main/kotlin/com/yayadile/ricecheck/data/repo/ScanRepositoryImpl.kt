@@ -54,6 +54,7 @@ class ScanRepositoryImpl(
                 wholeGrainPct = report.wholeGrainPct,
                 brokenPct = report.brokenPct,
                 bleachLevel = report.bleachLevel.name,
+                bleachPct = report.bleachPct,
                 createdAt = System.currentTimeMillis()
             )
         )

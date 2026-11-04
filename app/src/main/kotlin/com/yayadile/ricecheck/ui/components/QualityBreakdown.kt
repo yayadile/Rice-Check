@@ -36,6 +36,7 @@ fun QualityBreakdown(
     wholeGrainPct: Int,
     brokenPct: Int,
     bleachLevel: String,
+    bleachPct: Int?,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -87,7 +88,7 @@ fun QualityBreakdown(
             )
             Spacer(Modifier.weight(1f))
             Text(
-                text = bleachLabel(bleachLevel),
+                text = bleachLabel(bleachLevel) + (bleachPct?.let { " · $it%" } ?: ""),
                 style = MaterialTheme.typography.labelLarge,
                 color = if (bleachLevel == "TINGGI") RiceColors.Danger else RiceColors.Primary
             )
@@ -139,7 +140,8 @@ private fun QualityBreakdownPreview() {
                 qualityScore = 82,
                 wholeGrainPct = 91,
                 brokenPct = 9,
-                bleachLevel = "RENDAH"
+                bleachLevel = "RENDAH",
+                bleachPct = 12
             )
         }
     }

@@ -48,7 +48,7 @@ Tab Riwayat → filter (Semua / Asli / Oplosan) → tap baris → History Detail
 Home → kartu "Tips Foto Beras" (collapsible, 3 tips: latar kontras, pencahayaan rata, jarak 10–15 cm tegak lurus).
 4. Isi Tiap Screen (data jujur saja)
 Data real v1: harga (Rp/kg), skor kualitas 0–100, metrik (% butir utuh,
-% menir/patah, indikasi pemutih rendah/tinggi), hasil (ASLI / BERPOTENSI
+% menir/patah, indikasi pemutih rendah/tinggi + persentase keyakinan model), hasil (ASLI / BERPOTENSI
 OPLOSAN / LAPORAN KUALITAS), tanggal scan. Hanya ini yang boleh tampil.
 Onboarding — 3 kartu (foto + harga → analisis → hasil), Skip, Mulai.
 Home — hero banner (ilustrasi + sapaan), CTA Scan Beras, strip insight (1 angka real: "N pemindaian minggu ini"), kartu tips (collapsible), 3 scan terakhir (thumbnail, hasil, tanggal).
@@ -58,7 +58,7 @@ Result — 3 state:
 ASLI (badge hijau #388E33): harga mahal + kualitas tinggi
 BERPOTENSI OPLOSAN (badge merah #D32F2F): harga mahal + kualitas rendah + kalimat penjelasan ("Harga Rp16.000/kg tergolong premium, tapi kualitas terdeteksi rendah (45%)")
 LAPORAN KUALITAS (tanpa badge vonis): harga murah / tidak diisi
-  Semua state: harga yang diinput, breakdown metrik (butir utuh %, menir/patah %, pemutih), 1 disclaimer ("Hasil estimasi, bukan uji laboratorium"), 2 tombol: Scan lagi, Lihat riwayat.
+  Semua state: harga yang diinput, breakdown metrik (butir utuh %, menir/patah %, pemutih + persentase keyakinan), 1 disclaimer ("Hasil estimasi, bukan uji laboratorium"), 2 tombol: Scan lagi, Lihat riwayat.
 History — tab filter Semua / Asli / Berpotensi Oplosan, baris (thumbnail, hasil, tanggal), empty state ("Belum ada pemindaian").
 History Detail — foto besar, harga, hasil, skor + metrik kualitas, tanggal, tombol Hapus (+ dialog konfirmasi).
 5. States
@@ -73,6 +73,6 @@ Kembali ke Camera, tidak menyimpan apa-apa
 Hapus riwayat
 Dialog konfirmasi dulu, baru hapus
 6. Data Model (Room, ringkas)
-ScanResult: id, photoPath, price (nullable), result (ASLI / BERPOTENSI_OPLOSAN / LAPORAN_KUALITAS), qualityScore (0–100), wholeGrainPct, brokenPct, bleachLevel (RENDAH/TINGGI), timestamp. Detail penuh di architecture.md §2.
+ScanResult: id, photoPath, price (nullable), result (ASLI / BERPOTENSI_OPLOSAN / LAPORAN_KUALITAS), qualityScore (0–100), wholeGrainPct, brokenPct, bleachLevel (RENDAH/TINGGI), bleachPct (nullable), timestamp. Detail penuh di architecture.md §2.
 7. Di luar scope v1
 Login & sinkronisasi antar-device, statistik pola (merek/toko), share hasil scan.

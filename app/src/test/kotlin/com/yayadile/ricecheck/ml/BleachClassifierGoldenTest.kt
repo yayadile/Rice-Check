@@ -27,6 +27,14 @@ class BleachClassifierGoldenTest {
             val diff = abs(expectedDecision - decision)
             worst = maxOf(worst, diff)
             assertTrue("$name decision diff $diff", diff <= 1e-3)
+
+            val confidence = classifier.pemutihConfidence(features)
+            assertTrue("$name confidence $confidence", confidence in 0..100)
+            if (expectedClass == 1) {
+                assertTrue("$name confidence $confidence should be >= 50", confidence >= 50)
+            } else {
+                assertTrue("$name confidence $confidence should be <= 50", confidence <= 50)
+            }
         }
         println("BleachClassifier golden worst diff = $worst")
     }

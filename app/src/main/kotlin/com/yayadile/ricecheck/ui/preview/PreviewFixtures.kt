@@ -34,6 +34,7 @@ object PreviewFixtures {
         wholeGrainPct = 91,
         brokenPct = 9,
         bleachLevel = "RENDAH",
+        bleachPct = 12,
         createdAt = BASE_TIME
     )
 
@@ -46,6 +47,7 @@ object PreviewFixtures {
         wholeGrainPct = 52,
         brokenPct = 48,
         bleachLevel = "TINGGI",
+        bleachPct = 88,
         createdAt = BASE_TIME - ONE_DAY
     )
 
@@ -58,6 +60,7 @@ object PreviewFixtures {
         wholeGrainPct = 78,
         brokenPct = 22,
         bleachLevel = "RENDAH",
+        bleachPct = 20,
         createdAt = BASE_TIME - 2 * ONE_DAY
     )
 

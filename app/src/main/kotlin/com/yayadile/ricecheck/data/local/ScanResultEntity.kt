@@ -16,5 +16,6 @@ data class ScanResultEntity(
     val wholeGrainPct: Int,         // % butir utuh
     val brokenPct: Int,             // % menir/patah
     val bleachLevel: String,        // "RENDAH" | "TINGGI"
+    val bleachPct: Int?,            // 0..100 keyakinan model; null untuk scan lama (pra-v2)
     val createdAt: Long             // epoch millis
 )

@@ -42,6 +42,7 @@ data class ScanResultEntity(
     val wholeGrainPct: Int,         // % butir utuh
     val brokenPct: Int,             // % menir/patah
     val bleachLevel: String,        // "RENDAH" | "TINGGI"
+    val bleachPct: Int?,            // 0..100 keyakinan model; null untuk scan pra-v2
     val createdAt: Long             // epoch millis
 )
 @Dao
@@ -58,7 +59,8 @@ interface ScanDao {
     @Query("DELETE FROM scan_results WHERE id = :id")
     suspend fun deleteById(id: Long)
 }
-AppDatabase: version 1, exportSchema = true.
+AppDatabase: version 2, exportSchema = true. Migrasi 1->2 hanya menambah kolom
+bleachPct (nullable) lewat AppDatabase.MIGRATION_1_2, jadi scan lama tetap bisa dibuka.
 Catatan: jangan pakai room-ktx (blank artifact sejak 2.8.3). Flow dari room-runtime langsung sudah cukup; collect di viewModelScope.
 3. File storage (foto)
 Foto disimpan di internal storage: filesDir/scans/<timestamp>.jpg. DB hanya simpan path, bukan blob.
@@ -72,7 +74,7 @@ Dua model on-device (semua inferensi di Dispatchers.Default):
   Preprocess letterbox: resize INTER_LINEAR, pad 114, scaleup, stride 32.
   Postprocess: conf 0.25, class-aware NMS IoU 0.45, max 1000; box dikembalikan ke piksel asli.
   Kelas: 0 beras_utuh, 1 beras_patah, 2 menir, 3 gabah, 4 batu.
-- Klasifikasi kimia: assets/bleach_svm_rbf.bin (RBF SVM + StandardScaler, 198 SV, 8202 fitur).
+- Klasifikasi kimia: assets/bleach_svm.bin (SVM linear + StandardScaler, 156 SV, 8202 fitur).
   Fitur dari citra BGR 256x256: GLCM 6 + HOG(9 bin, 16x16 cell, 2x2 block, L2-Hys) 8100 +
   histogram warna 32 bin x 3 kanal (L2) 96.
   Fitur diekstrak di FeatureExtractor.kt (port sama persis dengan scikit-image/OpenCV).
@@ -82,6 +84,7 @@ Mapping yang disetujui (QualityMapping):
   brokenPct = round(100 * (patah + menir) / grain)
   qualityScore = round(100 * utuh / (utuh + patah + menir + gabah + batu))
   prediksi "pemutih" -> BleachLevel.TINGGI, selain itu RENDAH.
+  bleachPct = round(100 * sigmoid(decision)) — skor keyakinan model (0..100), bukan kadar kimia.
 Tanpa deteksi atau model gagal dimuat -> AnalysisException, layar failure; tidak ada angka stub.
 Tidak ada angka palsu di build apa pun.
 Dataset: gambar beras asli (Ultralytics dataset_det_v3 + classifier pemutih), bukan data contoh.

@@ -159,7 +159,8 @@ fun ResultContent(
                 qualityScore = scan.qualityScore,
                 wholeGrainPct = scan.wholeGrainPct,
                 brokenPct = scan.brokenPct,
-                bleachLevel = scan.bleachLevel
+                bleachLevel = scan.bleachLevel,
+                bleachPct = scan.bleachPct
             )
 
             Text(

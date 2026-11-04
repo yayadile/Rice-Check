@@ -29,7 +29,8 @@ Minta izin kamera saat pertama kali tap Scan; kalau ditolak → screen penjelasa
 Analisis
 Deteksi on-device (LiteRT), offline penuh
 Model = penilai kualitas, bukan classifier oplosan. Output: skor kualitas
-  0–100 + metrik: % butir utuh, % menir/patah, indikasi pemutih (rendah/tinggi)
+  0–100 + metrik: % butir utuh, % menir/patah, indikasi pemutih (rendah/tinggi
+  + persentase keyakinan model)
 Layar analyzing: animasi scan, 1 baris copy, progress, tombol Batal
 Hasil — 3 state:
 ASLI (badge hijau): harga mahal + kualitas tinggi

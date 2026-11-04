@@ -61,12 +61,14 @@ class RiceClassifier(
 
         val features = FeatureExtractor.extractFromArgb(argb, width, height)
         val bleachLevel = if (classifier.isPemutih(features)) BleachLevel.TINGGI else BleachLevel.RENDAH
+        val bleachPct = classifier.pemutihConfidence(features)
 
         QualityReport(
             qualityScore = metrics.qualityScore,
             wholeGrainPct = metrics.wholeGrainPct,
             brokenPct = metrics.brokenPct,
             bleachLevel = bleachLevel,
+            bleachPct = bleachPct,
             isStub = false,
         )
     }

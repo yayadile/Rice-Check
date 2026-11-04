@@ -9,6 +9,7 @@ data class QualityReport(
     val wholeGrainPct: Int,       // % butir utuh
     val brokenPct: Int,           // % menir/patah
     val bleachLevel: BleachLevel,  // indikasi pemutih
+    val bleachPct: Int,            // 0..100, keyakinan model "pemutih" (bukan kadar kimia)
     /**
      * True while the bundled model is still a placeholder. Screens must not present
      * stub numbers as a real analysis.

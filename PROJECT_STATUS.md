@@ -53,7 +53,7 @@ lalu memberi vonis berbasis ketidakcocokan harga vs kualitas. Analisis sepenuhny
 | tidak diisi (`null`) | apa pun | `LAPORAN_KUALITAS` (tanpa vonis) |
 
 - `VerdictConfig.PREMIUM_PRICE = 14_000`, `VerdictConfig.LOW_QUALITY = 60` — satu tempat, jangan duplikasi.
-- Metrik kualitas: `qualityScore` 0–100, `wholeGrainPct`, `brokenPct`, `bleachLevel` (`RENDAH`/`TINGGI`).
+- Metrik kualitas: `qualityScore` 0–100, `wholeGrainPct`, `brokenPct`, `bleachLevel` (`RENDAH`/`TINGGI`), `bleachPct` (0–100, keyakinan model).
 
 ### Di luar scope v1
 Login & sinkronisasi, statistik pola merek/toko, share hasil, dark mode, dynamic color, multi-bahasa.
@@ -167,7 +167,7 @@ ViewModel dibuat lewat factory manual di `viewmodel/ViewModelFactories.kt`.
 
 ## 5. Data layer
 
-### Room (versi 1, `exportSchema = true`)
+### Room (versi 2, `exportSchema = true`)
 Satu tabel: `scan_results`
 
 | Kolom | Tipe | Catatan |
@@ -180,10 +180,12 @@ Satu tabel: `scan_results`
 | `wholeGrainPct` | Int | % butir utuh |
 | `brokenPct` | Int | % menir/patah |
 | `bleachLevel` | String | `RENDAH` / `TINGGI` |
+| `bleachPct` | Int? | 0..100 keyakinan model; null untuk scan pra-v2 |
 | `createdAt` | Long | epoch millis |
 
 DAO: `insert`, `getAll`, `getById`, `getByResult`, `countSince`, `deleteById` (semua Flow/suspend).
-Skema JSON ada di `app/schemas/com.yayadile.ricecheck.data.local.AppDatabase/1.json` — wajib ikut di-commit.
+Skema JSON ada di `app/schemas/com.yayadile.ricecheck.data.local.AppDatabase/2.json` — wajib ikut di-commit.
+Migrasi `MIGRATION_1_2` hanya menambah kolom `bleachPct` (nullable), lihat §8 aturan skema.
 
 **`isStub` sengaja TIDAK disimpan di DB.** Status stub diturunkan dari `AppContainer.isClassifierStub`
 (karena tidak ada model → semua baris lama juga stub). Kalau model ditambahkan nanti, pertimbangkan
@@ -322,7 +324,7 @@ sesuai daftar di atas. Tidak perlu emulator.
 | Result 3 state | ✅ | + banner stub + disclaimer |
 | History + filter + empty state | ✅ | |
 | Detail riwayat + hapus | ✅ | row + file |
-| Room + schema export | ✅ | v1, tanpa room-ktx |
+| Room + schema export | ✅ | v2 (migrasi 1→2), tanpa room-ktx |
 | Manual DI + factories | ✅ | |
 | Unit test domain | ✅ | 10 test, 0 gagal |
 | Preview semua screen/komponen | ✅ | 21 preview, data preview-only |
@@ -386,7 +388,7 @@ adb shell am start -n com.yayadile.ricecheck/.MainActivity
 1. **Smoke test emulator** — SELESAI (API 36). Instrumented test `RiceClassifierInstrumentedTest`
    lulus 3/3 (model load, YOLO deteksi, mapping). Catatan: emulator harus pakai `-gpu host`;
    SwiftShader segfault di mesin ini.
-2. **Model asli + inferensi** — SELESAI. YOLO11s (LiteRT) + RBF SVM di Kotlin; parity fitur
+2. **Model asli + inferensi** — SELESAI. YOLO11s (LiteRT) + SVM linear di Kotlin; parity fitur
    ~1e-7 dan keputusan SVM <1e-3 terhadap scikit-image/OpenCV/sklearn.
 3. **Baris lama saat stub** — SELESAI: dihapus sekali saat upgrade (`legacy_stub_rows_cleared`).
 4. **Build release** — BELUM: signing config, `versionName`, minify, cek ukuran.
@@ -422,7 +424,7 @@ app/src/main/kotlin/com/yayadile/ricecheck/
 │   ├── RiceClassifier.kt            # orkestrasi YOLO + SVM -> QualityReport
 │   ├── YoloDetector.kt / YoloPost.kt# LiteRT, letterbox, decode, NMS
 │   ├── FeatureExtractor.kt          # GLCM + HOG + histogram (parity Python)
-│   ├── BleachClassifier.kt          # StandardScaler + RBF SVM
+│   ├── BleachClassifier.kt          # StandardScaler + SVM linear (dukung rbf juga)
 │   ├── QualityMapping.kt            # rumus metrik yang disetujui
 │   └── AnalysisException.kt         # kegagalan analisis (tanpa angka stub)
 ├── util/ImageDecoder.kt             # EXIF + sampling
@@ -435,7 +437,7 @@ app/src/main/kotlin/com/yayadile/ricecheck/
     │                                # RiceBottomBar, ScanPhoto, ScanRow, VerdictBadge
     ├── screens/                     # 7 screen (Screen + Content + Preview)
     └── preview/PreviewFixtures.kt   # data PREVIEW ONLY + PreviewSurface
-app/src/main/assets/                 # yolo11s_beras.tflite, bleach_svm_rbf.bin
+app/src/main/assets/                 # yolo11s_beras.tflite, bleach_svm.bin
 app/src/test/.../VerdictCalculatorTest.kt
 app/src/test/.../ml/                 # golden-vector + postprocess + mapping tests
 app/src/test/resources/golden/       # golden vectors (svm resized/features/scaled, yolo)
@@ -460,6 +462,6 @@ docs/                                # features, IA, architecture, design-tokens
 - Preview memakai `Content` stateless + `PreviewFixtures` + chip `PREVIEW DATA`.
 - Tidak ada angka stub sejak model asli terpasang: kegagalan → `AnalysisException`, bukan angka palsu.
 - Model tetap hanya menghasilkan metrik kualitas; vonis tetap di `VerdictCalculator`.
-- SVM dipilih varian RBF non-CLAHE (`C=10`, `gamma=scale`), di-port ke Kotlin (bukan runtime Python).
+- SVM dipilih varian **linear** non-CLAHE (`C=10`), di-port ke Kotlin (bukan runtime Python). Format aset v2 menyimpan kernel; RBF tetap didukung classifier.
 - YOLO TFLite NHWC + output NCHW; NMS class-aware conf 0.25 / IoU 0.45 / max 1000.
 - Model disimpan sebagai aset runtime di `app/src/main/assets/` (bukan di `models/`).
