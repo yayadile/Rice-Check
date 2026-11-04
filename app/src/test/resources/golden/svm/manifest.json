@@ -2,73 +2,73 @@
   {
     "name": "normal_00",
     "label": "normal",
-    "decision": -0.999663269843051,
+    "decision": -1.201516233629847,
     "class": 0
   },
   {
     "name": "normal_01",
     "label": "normal",
-    "decision": -0.35877816751778047,
+    "decision": -0.03158546956336341,
     "class": 0
   },
   {
     "name": "normal_02",
     "label": "normal",
-    "decision": -0.47100742291329173,
+    "decision": -0.5521612867428145,
     "class": 0
   },
   {
     "name": "normal_03",
     "label": "normal",
-    "decision": -1.0002845877500022,
+    "decision": -1.0003614210222314,
     "class": 0
   },
   {
     "name": "normal_04",
     "label": "normal",
-    "decision": -0.9998946676737568,
+    "decision": -0.9997524838019289,
     "class": 0
   },
   {
     "name": "normal_05",
     "label": "normal",
-    "decision": -0.9998703409677554,
+    "decision": -0.9997313568642123,
     "class": 0
   },
   {
     "name": "pemutih_00",
     "label": "pemutih",
-    "decision": 0.4532747506275891,
+    "decision": 0.5853282963165364,
     "class": 1
   },
   {
     "name": "pemutih_01",
     "label": "pemutih",
-    "decision": 1.0001844064081682,
+    "decision": 0.9999765548078021,
     "class": 1
   },
   {
     "name": "pemutih_02",
     "label": "pemutih",
-    "decision": 0.02133749222331366,
+    "decision": 0.03190227030534054,
     "class": 1
   },
   {
     "name": "pemutih_03",
     "label": "pemutih",
-    "decision": 1.0000230411157895,
+    "decision": 1.260221668294271,
     "class": 1
   },
   {
     "name": "pemutih_04",
     "label": "pemutih",
-    "decision": 0.8040108348791919,
+    "decision": 1.0280126868449524,
     "class": 1
   },
   {
     "name": "pemutih_05",
     "label": "pemutih",
-    "decision": 1.000056472141238,
+    "decision": 0.9997233827736705,
     "class": 1
   }
 ]

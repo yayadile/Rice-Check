@@ -3,15 +3,18 @@ package com.yayadile.ricecheck.ml
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
 import kotlin.math.exp
+import kotlin.math.roundToInt
 
 /**
- * Pure-Kotlin reader for the exported bleach RBF SVM (`app/src/main/assets/bleach_svm_rbf.bin`).
+ * Pure-Kotlin reader for the exported bleach SVM (`app/src/main/assets/bleach_svm.bin`).
  *
  * The asset is: standardize with [mean]/[scale], then
- * `decision = sum(dual_i * exp(-gamma * ||z - sv_i||^2)) + bias`.
+ *  - RBF:    `decision = sum(dual_i * exp(-gamma * ||z - sv_i||^2)) + bias`
+ *  - linear: `decision = sum(dual_i * dot(z, sv_i)) + bias`
  * A positive decision means class 1 (`pemutih`).
  */
 class BleachClassifier private constructor(
+    private val kernel: Kernel,
     private val gamma: Float,
     private val bias: Float,
     private val mean: FloatArray,
@@ -22,11 +25,35 @@ class BleachClassifier private constructor(
     private val nFeatures: Int,
 ) {
 
+    enum class Kernel { RBF, LINEAR }
+
+    /** Precomputed `sum(dual_i * sv_i)` so the linear decision is just a dot product. */
+    private val linearWeights: FloatArray? =
+        if (kernel == Kernel.LINEAR) {
+            val w = FloatArray(nFeatures)
+            for (s in 0 until nSupportVectors) {
+                val base = s * nFeatures
+                val d = dual[s]
+                for (f in 0 until nFeatures) w[f] += d * support[base + f]
+            }
+            w
+        } else {
+            null
+        }
+
     fun decision(features: FloatArray): Float {
         require(features.size == nFeatures) {
             "expected $nFeatures features, got ${features.size}"
         }
         val z = FloatArray(nFeatures) { (features[it] - mean[it]) / scale[it] }
+
+        if (kernel == Kernel.LINEAR) {
+            val w = linearWeights!!
+            var sum = 0.0
+            for (f in 0 until nFeatures) sum += w[f] * z[f]
+            return (sum + bias).toFloat()
+        }
+
         var sum = 0.0
         for (s in 0 until nSupportVectors) {
             val base = s * nFeatures
@@ -50,18 +77,20 @@ class BleachClassifier private constructor(
             val magic = ByteArray(4).also { buffer.get(it) }
             require(magic.contentEquals(MAGIC)) { "not a bleach SVM asset" }
             val version = buffer.int
-            require(version == 1) { "unsupported asset version $version" }
+            require(version == 1 || version == 2) { "unsupported asset version $version" }
             val nFeatures = buffer.int
             val nSupport = buffer.int
             buffer.int // n_classes
-            buffer.int // reserved
+            val kernelRaw = buffer.int
+            // Version 1 had a reserved field where version 2 stores the kernel; v1 was rbf.
+            val kernel = if (version == 1) Kernel.RBF else if (kernelRaw == 1) Kernel.LINEAR else Kernel.RBF
             val gamma = buffer.float
             val bias = buffer.float
             val mean = FloatArray(nFeatures) { buffer.float }
             val scale = FloatArray(nFeatures) { buffer.float }
             val support = FloatArray(nSupport * nFeatures) { buffer.float }
             val dual = FloatArray(nSupport) { buffer.float }
-            return BleachClassifier(gamma, bias, mean, scale, support, dual, nSupport, nFeatures)
+            return BleachClassifier(kernel, gamma, bias, mean, scale, support, dual, nSupport, nFeatures)
         }
     }
 }

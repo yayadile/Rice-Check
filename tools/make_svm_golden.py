@@ -36,6 +36,7 @@ def select_images(per_class: int) -> list[tuple[str, Path]]:
 
 def main() -> None:
     ap = argparse.ArgumentParser()
+    ap.add_argument("--bundle", default="models/bleach_svm/svm_linear.pkl")
     ap.add_argument("--out", default="app/src/test/resources/golden/svm")
     ap.add_argument("--per-class", type=int, default=6)
     args = ap.parse_args()
@@ -44,7 +45,7 @@ def main() -> None:
     for sub in ("resized", "features", "scaled"):
         (root / sub).mkdir(parents=True, exist_ok=True)
 
-    bundle = joblib.load("models/bleach_svm/svm_rbf.pkl")
+    bundle = joblib.load(args.bundle)
     model, scaler = bundle["model"], bundle["scaler"]
 
     manifest = []

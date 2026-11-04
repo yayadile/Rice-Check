@@ -23,7 +23,7 @@ Analysis runs fully on-device and offline. There is no login, sync, or network p
 
 The result is saved to history together with the photo, price, and metrics.
 
-Analysis is fully on-device: YOLO11s (LiteRT) detects and counts grains, then a ported RBF SVM
+Analysis is fully on-device: YOLO11s (LiteRT) detects and counts grains, then a ported linear SVM
 decides the bleach level. If a model is missing or no grain is detected the scan **fails with a
 clear message** — the app never fabricates numbers. See [models/README.md](models/README.md).
 
@@ -124,10 +124,10 @@ app/src/main/kotlin/com/yayadile/ricecheck/
     ├── components/      # reusable UI
     └── preview/         # preview-only fixtures
 
-app/src/main/assets/      # yolo11s_beras.tflite + bleach_svm_rbf.bin (runtime models)
+app/src/main/assets/      # yolo11s_beras.tflite + bleach_svm.bin (runtime models)
 app/src/test/resources/   # golden vectors for the ML port
 tools/                    # python export/verification scripts
-models/                  # source artifacts (best.pt/onnx, svm_rbf.pkl)
+models/                  # source artifacts (best.pt/onnx, svm_linear.pkl)
 docs/                    # product/architecture/design documentation
 ```
 
@@ -137,7 +137,7 @@ Runtime assets are bundled in `app/src/main/assets/`:
 
 - `yolo11s_beras.tflite` — YOLO11s detector (input `1x1280x1280x3` NHWC, output `1x9x33600`),
   classes `beras_utuh, beras_patah, menir, gabah, batu`.
-- `bleach_svm_rbf.bin` — RBF SVM + `StandardScaler` for the bleach classifier.
+- `bleach_svm.bin` — linear SVM + `StandardScaler` for the bleach classifier.
 
 Source artifacts and provenance live under [`models/`](models/README.md); export/verification
 scripts live under [`tools/`](tools/).
@@ -161,7 +161,7 @@ scripts live under [`tools/`](tools/).
 
 - YOLO11s weights are Ultralytics models, licensed **AGPL-3.0** — see
   [models/README.md](models/README.md) before distributing.
-- The bleach SVM is a scikit-learn `SVC(kernel="rbf")` ported to Kotlin (198 support vectors).
+- The bleach SVM is a scikit-learn `SVC(kernel="linear")` ported to Kotlin (156 support vectors).
 
 ## Disclaimer
 

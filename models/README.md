@@ -2,7 +2,7 @@
 
 Source model files copied from the training project `Deteksi Beras`. They are **integrated and
 shipping**: the runtime assets are `app/src/main/assets/yolo11s_beras.tflite` (converted from
-`best.onnx`) and `app/src/main/assets/bleach_svm_rbf.bin` (exported from `svm_rbf.pkl`). The
+`best.onnx`) and `app/src/main/assets/bleach_svm.bin` (exported from `svm_linear.pkl`). The
 Android pipeline is in `app/src/main/kotlin/com/yayadile/ricecheck/ml/`.
 
 The files in this folder are the canonical sources for regeneration, not the runtime assets.
@@ -26,12 +26,13 @@ Detection config used by the training project: `conf 0.25`, `iou 0.45`, `max_det
 
 ## `bleach_svm/`
 
-Source: `Deteksi Beras/bleach_model/` (scikit-learn `SVC`, kernel RBF, `C=10`, `gamma=scale`, `probability=True`).
-This is the best non-CLAHE variant (accuracy 94%, F1 0.9388).
+Source: `Deteksi Beras/bleach_model/` (scikit-learn `SVC`, `C=10`, `gamma=scale`, `probability=True`).
+The app ships the **linear** non-CLAHE variant (accuracy 94%, F1 0.9388, 156 support vectors).
 
 | File | Description |
 |---|---|
-| `svm_rbf.pkl` | joblib bundle: `model` (SVC), `scaler` (`StandardScaler`), `kernel`, `clahe=False`. |
+| `svm_linear.pkl` | joblib bundle for the shipped model: `model` (SVC, `kernel="linear"`), `scaler` (`StandardScaler`), `kernel`, `clahe=False`. |
+| `svm_rbf.pkl` | Alternative RBF bundle (same metrics, 198 support vectors); supported by the Kotlin classifier but not currently exported. |
 | `metrics.json` | Evaluation metrics for the RBF and linear kernels. |
 
 Input: 8202 features per image, computed as:
@@ -49,8 +50,9 @@ Classes: `0 normal`, `1 pemutih`. Output is `predict_proba` for the `pemutih` cl
 - Runtime YOLO asset: `app/src/main/assets/yolo11s_beras.tflite`
   (input `1x1280x1280x3` NHWC RGB/255, output `1x9x33600` NCHW; pad 114, class-aware NMS
   conf 0.25 / IoU 0.45 / max 1000).
-- Runtime SVM asset: `app/src/main/assets/bleach_svm_rbf.bin` (little-endian float32: magic
-  `RSVM`, version, shapes, gamma, bias, scaler mean/scale, 198x8202 support vectors, dual coefs).
+- Runtime SVM asset: `app/src/main/assets/bleach_svm.bin` (little-endian float32, format v2: magic
+  `RSVM`, version, shapes, kernel, gamma, bias, scaler mean/scale, 156x8202 support vectors, dual
+  coefs). The Kotlin classifier supports `kernel` 0 (rbf) and 1 (linear).
 - Kotlin: `ml/YoloDetector.kt`, `ml/YoloPost.kt`, `ml/FeatureExtractor.kt`,
   `ml/BleachClassifier.kt`, `ml/QualityMapping.kt`, orchestrated by `ml/RiceClassifier.kt`.
 - The verdict stays in `VerdictCalculator`; models only produce quality metrics.

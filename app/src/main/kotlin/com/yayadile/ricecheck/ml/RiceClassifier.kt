@@ -76,7 +76,7 @@ class RiceClassifier(
     }
 
     companion object {
-        const val SVM_ASSET_NAME = "bleach_svm_rbf.bin"
+        const val SVM_ASSET_NAME = "bleach_svm.bin"
         private const val TAG = "RiceClassifier"
     }
 }
