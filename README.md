@@ -13,6 +13,20 @@ Analysis runs fully on-device and offline. There is no login, sync, or network p
  "Statistics")
 
 <!-- CONTRIBUTORS:START -->
+## Contributors
+
+| Rank | Contributor | Commits | Share |
+| --- | --- | --- | --- |
+| 1 | pili156 | 13 | 59% |
+| 2 | yayadile | 9 | 41% |
+
+Total: 22 contributions.
+
+```mermaid
+pie title Rice-Check Contributors
+    "pili156" : 13
+    "yayadile" : 9
+```
 <!-- CONTRIBUTORS:END -->
 
 ## How it works
