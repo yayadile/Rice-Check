@@ -12,6 +12,9 @@ Analysis runs fully on-device and offline. There is no login, sync, or network p
 ![Alt](https://repobeats.axiom.co/api/embed/b3a9a692bb159184e4a189cbe6153470c5a4804e.svg 
  "Statistics")
 
+<!-- CONTRIBUTORS:START -->
+<!-- CONTRIBUTORS:END -->
+
 ## How it works
 
 1. Take a photo of rice (or pick one from the gallery) and optionally enter the price per kg.
