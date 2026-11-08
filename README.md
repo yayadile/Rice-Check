@@ -7,6 +7,12 @@ potentially adulterated.
 
 Analysis runs fully on-device and offline. There is no login, sync, or network permission.
 
+## Contributors
+
+<a href="https://github.com/yayadile/Rice-Check.git">
+  <img src="https://contrib.rocks" />
+</a>
+
 ## How it works
 
 1. Take a photo of rice (or pick one from the gallery) and optionally enter the price per kg.
