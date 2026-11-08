@@ -7,7 +7,7 @@ potentially adulterated.
 
 Analysis runs fully on-device and offline. There is no login, sync, or network permission.
 
-## Stats
+## Statistic
 
 ![Alt](https://repobeats.axiom.co/api/embed/5c0a17ef1bc0cab8842f665bf35b9bc2ac774658.svg "Statistics")
 
