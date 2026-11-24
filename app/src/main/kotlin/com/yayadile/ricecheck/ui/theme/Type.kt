@@ -29,6 +29,20 @@ val HankenGrotesk = FontFamily(
 
 /** Type scale from docs/design-tokens.md. */
 val RiceTypography = Typography(
+    // Hero display — 44sp / 52sp / 800 — angka skor besar di hero card
+    displayLarge = TextStyle(
+        fontFamily = Manrope,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 44.sp,
+        lineHeight = 52.sp
+    ),
+    // Hero number — 34sp / 42sp / 800 — harga besar / angka pendukung hero
+    displayMedium = TextStyle(
+        fontFamily = Manrope,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 34.sp,
+        lineHeight = 42.sp
+    ),
     // Display — 28sp / 36sp / 800 — skor kualitas
     displaySmall = TextStyle(
         fontFamily = Manrope,

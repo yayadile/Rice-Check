@@ -1,6 +1,7 @@
 package com.yayadile.ricecheck.ui.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,11 +14,13 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.yayadile.ricecheck.ui.preview.PreviewSurface
 import com.yayadile.ricecheck.ui.theme.PillShape
 import com.yayadile.ricecheck.ui.theme.RiceColors
+import com.yayadile.ricecheck.ui.theme.RiceGradients
 import com.yayadile.ricecheck.ui.theme.Spacing
 
 @Composable
@@ -27,15 +30,23 @@ fun RicePrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true
 ) {
+    val shape = PillShape
     Button(
         onClick = onClick,
         modifier = modifier
             .fillMaxWidth()
-            .height(52.dp),
+            .height(52.dp)
+            .then(
+                if (enabled) {
+                    Modifier.background(brush = RiceGradients.PrimaryButton, shape = shape)
+                } else {
+                    Modifier
+                }
+            ),
         enabled = enabled,
-        shape = PillShape,
+        shape = shape,
         colors = ButtonDefaults.buttonColors(
-            containerColor = RiceColors.Primary,
+            containerColor = Color.Transparent,
             contentColor = RiceColors.OnPrimary,
             disabledContainerColor = RiceColors.Outline,
             disabledContentColor = RiceColors.OnPrimary

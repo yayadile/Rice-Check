@@ -31,7 +31,7 @@ object RiceColors {
     /** Border kartu. */
     val Outline = Color(0xFFBFCABA)
 
-    /** Badge OPLOSAN, tombol hapus. */
+    /** Badge OPLOSAN, tombol hapus, ring skor rendah. */
     val Danger = Color(0xFFD32F2F)
 
     /** Teks di atas hijau/merah. */

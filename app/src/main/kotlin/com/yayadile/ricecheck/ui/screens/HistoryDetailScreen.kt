@@ -3,6 +3,7 @@ package com.yayadile.ricecheck.ui.screens
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -188,6 +189,7 @@ fun HistoryDetailContent(
                     .fillMaxWidth()
                     .clip(CardLargeShape)
                     .background(RiceColors.Surface)
+                    .border(1.dp, RiceColors.Outline, CardLargeShape)
                     .padding(Spacing.md),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {

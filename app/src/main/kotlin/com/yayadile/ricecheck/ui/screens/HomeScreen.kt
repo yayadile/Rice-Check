@@ -1,5 +1,6 @@
 package com.yayadile.ricecheck.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -46,6 +48,7 @@ import com.yayadile.ricecheck.ui.preview.PreviewSurface
 import com.yayadile.ricecheck.ui.theme.CardLargeShape
 import com.yayadile.ricecheck.ui.theme.PillShape
 import com.yayadile.ricecheck.ui.theme.RiceColors
+import com.yayadile.ricecheck.ui.theme.RiceGradients
 import com.yayadile.ricecheck.ui.theme.ScreenPadding
 import com.yayadile.ricecheck.ui.theme.Spacing
 import com.yayadile.ricecheck.viewmodel.HomeUiState
@@ -59,7 +62,7 @@ private val tips = listOf(
 )
 
 /**
- * Route: home — hero, CTA, real weekly count, tips, 3 most recent scans.
+ * Route: home — hero with the real 3-step flow, real weekly count, tips, 3 most recent scans.
  */
 @Composable
 fun HomeScreen(
@@ -112,121 +115,28 @@ fun HomeContent(
             contentPadding = PaddingValues(ScreenPadding),
             verticalArrangement = Arrangement.spacedBy(Spacing.md)
         ) {
+            item { HomeHero(onScan = onScan) }
+
             item {
-                Text(
-                    text = "Cek kualitas beras sebelum membeli.",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = RiceColors.TextSecondary
+                TipsRow(
+                    expanded = tipsExpanded,
+                    onToggle = { tipsExpanded = !tipsExpanded }
                 )
             }
 
             item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(CardLargeShape)
-                        .background(RiceColors.Cream)
-                        .padding(Spacing.lg)
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(44.dp)
-                            .clip(CircleShape)
-                            .background(RiceColors.Surface),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.ic_photo_camera),
-                            contentDescription = null,
-                            tint = RiceColors.Primary
-                        )
-                    }
-                    Spacer(Modifier.height(Spacing.md))
                     Text(
-                        text = "Foto beras, isi harga, lihat hasilnya.",
-                        style = MaterialTheme.typography.headlineSmall,
+                        text = "Pemindaian terakhir",
+                        style = MaterialTheme.typography.titleLarge,
                         color = RiceColors.Text
                     )
-                    Spacer(Modifier.height(Spacing.sm))
-                    Text(
-                        text = "Analisis berjalan di perangkat, tanpa koneksi internet.",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = RiceColors.TextSecondary
-                    )
-                    Spacer(Modifier.height(Spacing.md))
-                    RicePrimaryButton(text = "Scan Beras", onClick = onScan)
+                    Spacer(Modifier.weight(1f))
+                    WeeklyCountPill(count = state.weeklyScanCount)
                 }
-            }
-
-            item {
-                Text(
-                    text = if (state.weeklyScanCount == 0) {
-                        "Belum ada pemindaian minggu ini"
-                    } else {
-                        "${state.weeklyScanCount} pemindaian minggu ini"
-                    },
-                    style = MaterialTheme.typography.labelMedium,
-                    color = RiceColors.TextSecondary,
-                    modifier = Modifier
-                        .clip(PillShape)
-                        .background(RiceColors.SurfaceGreen)
-                        .padding(horizontal = Spacing.md, vertical = Spacing.sm)
-                )
-            }
-
-            item {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clip(CardLargeShape)
-                        .background(RiceColors.Cream)
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { tipsExpanded = !tipsExpanded }
-                            .padding(horizontal = Spacing.md, vertical = Spacing.md),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "Tips Foto Beras",
-                            style = MaterialTheme.typography.titleMedium,
-                            color = RiceColors.Text
-                        )
-                        Text(
-                            text = if (tipsExpanded) "Tutup" else "Lihat",
-                            style = MaterialTheme.typography.labelMedium,
-                            color = RiceColors.Primary
-                        )
-                    }
-                    if (tipsExpanded) {
-                        Column(
-                            modifier = Modifier.padding(
-                                start = Spacing.md,
-                                end = Spacing.md,
-                                bottom = Spacing.md
-                            ),
-                            verticalArrangement = Arrangement.spacedBy(Spacing.sm)
-                        ) {
-                            tips.forEach { tip ->
-                                Text(
-                                    text = "•  $tip",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = RiceColors.TextSecondary
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            item {
-                Text(
-                    text = "Pemindaian terakhir",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = RiceColors.Text,
-                    modifier = Modifier.padding(top = Spacing.sm)
-                )
             }
 
             if (state.recentScans.isEmpty()) {
@@ -238,7 +148,11 @@ fun HomeContent(
                             color = RiceColors.TextSecondary
                         )
                         TextButton(onClick = onScan) {
-                            Text(text = "Scan sekarang", style = MaterialTheme.typography.labelMedium)
+                            Text(
+                                text = "Scan sekarang",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = RiceColors.Primary
+                            )
                         }
                     }
                 }
@@ -249,6 +163,181 @@ fun HomeContent(
             }
 
             item { Spacer(Modifier.height(Spacing.sm)) }
+        }
+    }
+}
+
+/** Hero: logo, greeting, the real 1→2→3 flow, then the CTA. */
+@Composable
+private fun HomeHero(onScan: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(CardLargeShape)
+            .background(RiceGradients.HeroCream)
+            .padding(horizontal = Spacing.md, vertical = Spacing.lg),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Image(
+            painter = painterResource(R.drawable.logo_ricecheck),
+            contentDescription = null,
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+        )
+        Spacer(Modifier.height(Spacing.md))
+        Text(
+            text = "Cek kualitas beras sebelum membeli.",
+            style = MaterialTheme.typography.headlineSmall,
+            color = RiceColors.Text
+        )
+        Spacer(Modifier.height(Spacing.sm))
+        Text(
+            text = "Analisis berjalan di perangkat, tanpa koneksi internet.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = RiceColors.TextSecondary
+        )
+        Spacer(Modifier.height(Spacing.md))
+        FlowSteps()
+        Spacer(Modifier.height(Spacing.md))
+        RicePrimaryButton(text = "Scan Beras", onClick = onScan)
+    }
+}
+
+/** The real product flow: 1 Foto → 2 Harga → 3 Hasil. */
+@Composable
+private fun FlowSteps() {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        StepChip(number = "1", label = "Foto")
+        StepArrow()
+        StepChip(number = "2", label = "Harga")
+        StepArrow()
+        StepChip(number = "3", label = "Hasil")
+    }
+}
+
+@Composable
+private fun StepChip(number: String, label: String) {
+    Row(
+        modifier = Modifier
+            .clip(PillShape)
+            .background(RiceColors.SurfaceGreen)
+            .padding(start = Spacing.xs, end = Spacing.sm, top = Spacing.xs, bottom = Spacing.xs),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(20.dp)
+                .clip(CircleShape)
+                .background(RiceColors.Primary),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = number,
+                style = MaterialTheme.typography.labelSmall,
+                color = RiceColors.OnPrimary
+            )
+        }
+        Spacer(Modifier.width(Spacing.xs))
+        Text(
+            text = label,
+            style = MaterialTheme.typography.labelMedium,
+            color = RiceColors.Text
+        )
+    }
+}
+
+@Composable
+private fun StepArrow() {
+    Icon(
+        painter = painterResource(R.drawable.ic_arrow_forward),
+        contentDescription = null,
+        tint = RiceColors.Outline,
+        modifier = Modifier
+            .padding(horizontal = Spacing.xs)
+            .size(16.dp)
+    )
+}
+
+/** Weekly count lives in the section header, so it does not float on its own. */
+@Composable
+private fun WeeklyCountPill(count: Int) {
+    Text(
+        text = if (count == 0) {
+            "Minggu ini: belum ada"
+        } else {
+            "Minggu ini: $count"
+        },
+        style = MaterialTheme.typography.labelMedium,
+        color = RiceColors.TextSecondary,
+        modifier = Modifier
+            .clip(PillShape)
+            .background(RiceColors.SurfaceGreen)
+            .padding(horizontal = Spacing.sm, vertical = Spacing.xs)
+    )
+}
+
+/** Tips are a plain expandable row — icon, title, chevron — not a full card. */
+@Composable
+private fun TipsRow(
+    expanded: Boolean,
+    onToggle: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(onClick = onToggle)
+                .padding(vertical = Spacing.sm),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(RiceColors.SurfaceGreen),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_lightbulb),
+                    contentDescription = null,
+                    tint = RiceColors.Primary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(Modifier.width(Spacing.sm))
+            Text(
+                text = "Tips Foto Beras",
+                style = MaterialTheme.typography.bodyLarge,
+                color = RiceColors.Text
+            )
+            Spacer(Modifier.weight(1f))
+            Icon(
+                painter = painterResource(
+                    if (expanded) R.drawable.ic_expand_less else R.drawable.ic_expand_more
+                ),
+                contentDescription = if (expanded) "Tutup tips" else "Lihat tips",
+                tint = RiceColors.TextSecondary
+            )
+        }
+        if (expanded) {
+            Column(
+                modifier = Modifier.padding(start = Spacing.xs, bottom = Spacing.sm),
+                verticalArrangement = Arrangement.spacedBy(Spacing.sm)
+            ) {
+                tips.forEach { tip ->
+                    Text(
+                        text = "•  $tip",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = RiceColors.TextSecondary
+                    )
+                }
+            }
         }
     }
 }

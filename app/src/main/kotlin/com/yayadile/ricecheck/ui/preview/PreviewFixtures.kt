@@ -28,11 +28,11 @@ object PreviewFixtures {
     val asli = ScanResultEntity(
         id = 1,
         photoPath = "",
-        price = 16_000,
+        price = 15_500,
         result = VerdictCalculator.ASLI,
         qualityScore = 82,
-        wholeGrainPct = 91,
-        brokenPct = 9,
+        wholeGrainPct = 88,
+        brokenPct = 12,
         bleachLevel = "RENDAH",
         bleachPct = 12,
         createdAt = BASE_TIME
@@ -44,25 +44,29 @@ object PreviewFixtures {
         price = 16_000,
         result = VerdictCalculator.BERPOTENSI_OPLOSAN,
         qualityScore = 45,
-        wholeGrainPct = 52,
-        brokenPct = 48,
+        wholeGrainPct = 58,
+        brokenPct = 42,
         bleachLevel = "TINGGI",
         bleachPct = 88,
         createdAt = BASE_TIME - ONE_DAY
     )
 
+    // Cheap price — the quality report carries no verdict.
     val laporanKualitas = ScanResultEntity(
         id = 3,
         photoPath = "",
-        price = null,
+        price = 11_500,
         result = VerdictCalculator.LAPORAN_KUALITAS,
-        qualityScore = 71,
-        wholeGrainPct = 78,
-        brokenPct = 22,
+        qualityScore = 68,
+        wholeGrainPct = 74,
+        brokenPct = 26,
         bleachLevel = "RENDAH",
         bleachPct = 20,
         createdAt = BASE_TIME - 2 * ONE_DAY
     )
+
+    // Empty price — same quality-report state, price shown as "Tidak diisi".
+    val laporanTanpaHarga = laporanKualitas.copy(id = 4, price = null)
 
     val recentScans = listOf(berpotensiOplosan, asli, laporanKualitas)
 }

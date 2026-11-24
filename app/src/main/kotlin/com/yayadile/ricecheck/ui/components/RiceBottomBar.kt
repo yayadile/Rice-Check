@@ -20,6 +20,7 @@ import com.yayadile.ricecheck.R
 import com.yayadile.ricecheck.ui.navigation.Routes
 import com.yayadile.ricecheck.ui.preview.PreviewSurface
 import com.yayadile.ricecheck.ui.theme.RiceColors
+import com.yayadile.ricecheck.ui.theme.RiceGradients
 
 /**
  * Bottom nav with 3 points (docs/IA.md §1): Beranda | Scan (prominent) | Riwayat.
@@ -59,7 +60,7 @@ fun RiceBottomBar(
                     modifier = Modifier
                         .size(44.dp)
                         .clip(CircleShape)
-                        .background(RiceColors.Primary),
+                        .background(RiceGradients.PrimaryButton),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
